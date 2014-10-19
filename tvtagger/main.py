@@ -35,7 +35,6 @@ def main():
     parser.add_argument('-n', '--no-tagging', dest='tag', nargs='?', const=0, default=1, help='Don\'t tag files')
     parser.add_argument('-c', '--comment', dest='comment', nargs='?', default='',help='Comment to be saved in the comment frame')
 
-
     args = parser.parse_args()
 
     files = []
@@ -83,6 +82,4 @@ def main():
 
         if args.tag == 1:
             ret = f.save()
-            print ret
-
-    print "File:" + fil + " Processed: " + full_title_txt
+            print 'File:' + fil + ' Processed: ' + full_title_txt
