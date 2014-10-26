@@ -23,7 +23,7 @@ def read_directory(dir, rec):
                     files.append(child)
         else:
             files.append(dir + '/' + node)
-    return files
+    return sorted(files)
 
 
 def main():
@@ -56,30 +56,33 @@ def main():
     t = tvdb_api.Tvdb()
 
     for fil in files:
-        f = taglib.File(fil)
+        try:
+            f = taglib.File(fil)
 
-        if args.erase == 1:
-            for tag in f.tags:
-                del f.tags[tag]
+            if args.erase == 1:
+                for tag in f.tags:
+                    del f.tags[tag]
 
-        ep = tvnamer.utils.FileParser(fil).parse()
-        ep.populateFromTvdb(t)
-        season = t[ep.seriesname][ep.seasonnumber]
+            ep = tvnamer.utils.FileParser(fil).parse()
+            ep.populateFromTvdb(t)
+            season = t[ep.seriesname][ep.seasonnumber]
 
-        full_title_txt = str(ep.seriesname) + " - S" + "{0:02d}".format(ep.seasonnumber) + 'E' + "{0:02d}".format(ep.episodenumbers[0]) + " - " + str(ep.episodename[0])
+            full_title_txt = str(ep.seriesname) + " - S" + "{0:02d}".format(ep.seasonnumber) + 'E' + "{0:02d}".format(ep.episodenumbers[0]) + " - " + str(ep.episodename[0])
 
-        series_tag = 'ALBUM'
-        title_tag = 'TITLE'
-        comment_tag = 'COMMENT'
-        track_tag = 'TRACKNUMBER'
+            series_tag = 'ALBUM'
+            title_tag = 'TITLE'
+            comment_tag = 'COMMENT'
+            track_tag = 'TRACKNUMBER'
 
-        if args.comment != '':
-            f.tags[comment_tag] = [args.comment]
+            if args.comment != '':
+                f.tags[comment_tag] = [args.comment]
 
-        f.tags[series_tag] = [str(ep.seriesname) + " - S" + "{0:02d}".format(ep.seasonnumber)]
-        f.tags[title_tag] = [full_title_txt]
-        f.tags[track_tag] = ["{0:02d}".format(ep.seasonnumber) + "/" + "{0:02d}".format(len(season.keys()))]
+            f.tags[series_tag] = [str(ep.seriesname) + " - S" + "{0:02d}".format(ep.seasonnumber)]
+            f.tags[title_tag] = [full_title_txt]
+            f.tags[track_tag] = ["{0:02d}".format(ep.seasonnumber) + "/" + "{0:02d}".format(len(season.keys()))]
 
-        if args.tag == 1:
-            ret = f.save()
-            print 'File:' + fil + ' Processed: ' + full_title_txt
+            if args.tag == 1:
+                ret = f.save()
+                print 'File:' + fil + ' Processed: ' + full_title_txt
+        except:
+            print 'Error while reading File:' + fil
